@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * @category  Mageho
+ * @package   Mageho_All
+ * @copyright Copyright (c) 2012 - 2013  Mageho (http://www.mageho.com)
+ * @license     http://www.mageho.com/license  Proprietary License
+ */
+-->
+<config>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <magehoall>
+                                        <title>Mageho</title>
+                                    </magehoall>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>
