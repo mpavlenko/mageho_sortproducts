@@ -13,19 +13,6 @@ class Mageho_Sortproducts_Helper_Data extends Mage_Core_Helper_Abstract
 	const SORTPRODUCTS_DISPLAY_ONLY_ENABLED_PRODUCTS = 'sortproducts/general/display_only_enabled_products';
 	const SORTPRODUCTS_LIMIT_PRODUCTS = 'sortproducts/general/limit_products';
 	
-    /**
-     * Translate
-     *
-     * @return string
-     */
-    public function __()
-    {
-        $args = func_get_args();
-        $expr = new Mage_Core_Model_Translate_Expr(array_shift($args), 'Mageho_Sortproducts');
-        array_unshift($args, $expr);
-        return utf8_encode(Mage::app()->getTranslator()->translate($args));
-    }
-	
 	public function displayOutStockProducts()
 	{
 		return Mage::getStoreConfigFlag(self::SORTPRODUCTS_DISPLAY_OUT_STOCK_PRODUCTS);	
