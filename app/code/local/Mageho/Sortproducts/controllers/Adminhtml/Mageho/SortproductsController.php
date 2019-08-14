@@ -2,9 +2,9 @@
 /*
  * @category   Mageho
  * @package    Mageho_Sortproducts
- * @version    1.0.0
+ * @version     1.0.0
  * @copyright  Copyright (c) 2012  Mageho (http://www.mageho.com)
- * @license    http://www.mageho.com/license  Proprietary License
+ * @license      http://www.mageho.com/license  Proprietary License
  */
  
 class Mageho_Sortproducts_Adminhtml_Mageho_SortproductsController extends Mage_Adminhtml_Controller_Action
@@ -25,58 +25,66 @@ class Mageho_Sortproducts_Adminhtml_Mageho_SortproductsController extends Mage_A
 	public function infoAction()
 	{
 		$productId  = $this->getRequest()->getParam('id', false);
-        $product    = Mage::getModel('catalog/product')
-            ->setStoreId($this->getRequest()->getParam('store', 0));
-			
 		if ($productId) {
-			$product->load($productId);
-		
-			Mage::register('product', $product);
-			Mage::register('current_product', $product);
-				
-			$this->getResponse()->setBody(
-				$this->getLayout()->createBlock('mageho_sortproducts/adminhtml_info')->toHtml()
-			);
+			$product = Mage::getModel('catalog/product')
+            	->setStoreId($this->getRequest()->getParam('store', 0))
+				->load($productId);
+			
+			if ($product) {
+				Mage::register('product', $product);
+				Mage::register('current_product', $product);
+					
+				$this->getResponse()->setBody(
+					$this->getLayout()->createBlock('mageho_sortproducts/adminhtml_info')->toHtml()
+				);
+			}
         }
 	}
 	
 	public function saveAction()
 	{
 	    $data = $this->getRequest()->getPost('data');
+		$iframe = $this->getRequest()->getPost('iframe');
 		$categoryId = $this->getRequest()->getParam('id', false);
 		
-		try {
-			if (! $data) {
-				throw new Exception('no data post parameters');	
-			}
-
-        	if ($categoryId) {
-				$category = Mage::getModel('catalog/category')
-					->setStoreId($this->getRequest()->getParam('store', 0))
-					->load($categoryId);
-				
-				if ($category->getId()) {
-					parse_str($data);
-					for ($i = 0; $i < count($sortlist); $i++) {
-						$position = $i;
-						$productId = $sortlist[$i];
+		$saved = false;
+		
+        if ($categoryId && ctype_digit($categoryId)) 
+        {
+        	parse_str($data);
+			for ($i = 0; $i < count($sortlist); $i++) 
+			{
+				$position = $i;
+				$productId = $sortlist[$i];
 							
-						Mage::getResourceModel('mageho_sortproducts/position')->save($position, $productId, $category->getId());
-					}
-					
-					Mage::app()->cleanCache(array(Mage_Catalog_Model_Category::CACHE_TAG.'_'.$category->getId()));
-					
-					Mage::getSingleton('adminhtml/session')->addSuccess(
-						Mage::helper('mageho_sortproducts')->__('The position of products has been saved with success.')
-					);
-				}	
+				Mage::getResourceModel('mageho_sortproducts/position')->save($position, $productId, $categoryId);
 			}
-		} catch (Exception $e) {
-			Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
+			
+			// Disable below because too slow to process
+					
+			// Delete all cache for all categories 
+			// Mage::app()->cleanCache(array(Mage_Catalog_Model_Category::CACHE_TAG));
+					
+			// Delete current category cache
+			Mage::app()->cleanCache(array(Mage_Catalog_Model_Category::CACHE_TAG.'_'.$categoryId));
+					
+			Mage::getSingleton('adminhtml/session')->addSuccess(
+				Mage::helper('mageho_sortproducts')->__('The position of products has been saved with success.')
+			);
+				
+			$saved = true;
 		}
 		
-		$resetUrl = Mage::helper('adminhtml')->getUrl('adminhtml/catalog_category/edit', array('active_tab_id' => 'category_info_tabs_sortproducts', '_current' => true));
-		$this->getResponse()->setBody("window.top.categoryReset('{$resetUrl}', true);");
+		if ($saved) 
+		{
+			if ($iframe == 'true') {
+				$resetUrl = Mage::helper('adminhtml')->getUrl('adminhtml/catalog_category/edit', array('active_tab_id' => 'category_info_tabs_sortproducts', '_current' => true));
+				$this->getResponse()->setBody("window.top.categoryReset('{$resetUrl}', true);");
+			} else {
+				$stringLocalSavedPosition = Mage::helper('core')->jsQuoteEscape($this->__('The position of products has been saved with success.'));
+				$this->getResponse()->setBody("window.opener.location.reload(true); alert('{$stringLocalSavedPosition}');");
+			}
+		}
 	}
 	
 	/**

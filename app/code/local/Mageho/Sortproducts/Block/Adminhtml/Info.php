@@ -17,11 +17,12 @@ class Mageho_Sortproducts_Block_Adminhtml_Info extends Mage_Adminhtml_Block_Temp
 	
 	public function getSavePercentage($product) 
 	{
-	    if ($product->getSpecialPrice()) {
-			$save = number_format( (100 - ( $product->getFinalPrice() / $product->getPrice() ) * 100) );
-			return '-' . $save  . '%';
+	    if ($product->getPrice() == $product->getFinalPrice()) {
+			return false;
 		}
-		return false;
+		
+		$save = number_format( (100 - ( $product->getFinalPrice() / $product->getPrice() ) * 100) );
+		return '-' . $save  . '%';
 	}
 	
 	public function getAttributesToShow()
@@ -41,9 +42,11 @@ class Mageho_Sortproducts_Block_Adminhtml_Info extends Mage_Adminhtml_Block_Temp
 		if ($countColumnSettings < 1) {
 			return false;	
 		}
+		
 		if ($countColumnSettings == 1 && current($columnSettings) == '') {
 			return false;	
 		}
+		
         return $columnSettings;
     }
 	

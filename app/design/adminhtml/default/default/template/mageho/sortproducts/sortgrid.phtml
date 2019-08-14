@@ -8,44 +8,14 @@
  */
 ?>
 <?php if (($_products = $this->getProductsCollection()) && $_products->getSize()): ?>
-<script type="text/javascript">
-//<![CDATA[
-document.observe('dom:loaded', function() {
-	Sortable.create('sortlist', {
-		tag: 'li',
-		only: 'sorting',
-		hoverclass: 'over',
-		overlap: 'horizontal',
-		ghosting: false,
-		constraint: false,
-		scroll: window,
-		scrollSensitivity: 30,
-		scrollSpeed: 25
-    })
-	
-	$$('button.button-save-sortable').each(function(el) {
-		el.onclick = function() {
-			new Ajax.Request("<?php echo $this->getSaveUrl(); ?>", {
-				method: "post",
-				evalScripts: true,
-				onLoading: function() { parent.$('loading-mask').show() },
-				onSuccess: function(transport) { parent.$('loading-mask').hide() },
-				onComplete:function(transport) { eval(transport.responseText) },
-				parameters: {
-					data: Sortable.serialize('sortlist'),
-					form_key: '<?php echo $this->getFormKey(); ?>'
-				}
-			})
-		}
-	})
-})
-//]]>
-</script>
-
 <div id="messages"></div>
-
 <div class="content-header">
-	<div class="content-buttons-placeholder"><p class="content-buttons form-buttons"><button type="button" class="scalable button-save-sortable"><span><?php echo $this->__('Save Products Position'); ?></span></button></p></div>
+	<div class="content-buttons-placeholder">
+		<p class="content-buttons form-buttons">
+			<button type="button" class="scalable button-open-new-window"><span><?php echo $this->__('Open in New Window'); ?></span></button>
+			<button type="button" class="scalable button-save-sortable"><span><?php echo $this->__('Save Products Position'); ?></span></button>
+		</p>
+	</div>
 </div>
 
 <div id="sortlist-wrapper">
@@ -72,12 +42,67 @@ document.observe('dom:loaded', function() {
         <?php endforeach; ?>
     </ul>
 </div>
-
-<script type="text/javascript">
+<script>
 //<![CDATA[
-	$$('.sorting-image').each(function(image) {
-		image.addTip({ title: image.alt, style: 'slick', ajax: { url: image.readAttribute('longdesc'), options: { parameters: { form_key: '<?php echo $this->getFormKey(); ?>'} } } });
+document.observe('dom:loaded', function() {
+	Sortable.create('sortlist', {
+		tag: 'li',
+		only: 'sorting',
+		hoverclass: 'over',
+		overlap: 'horizontal',
+		ghosting: false,
+		constraint: false,
+		scroll: window,
+		scrollSensitivity: 30,
+		scrollSpeed: 25
+    })
+    
+    $$('.sorting-image').each(function(image) {
+		image.addTip({ 
+			title: image.alt, 
+			style: 'slick', 
+			ajax: { 
+				url: image.readAttribute('longdesc'), 
+				options: { 
+					parameters: { form_key: '<?php echo $this->getFormKey(); ?>'} 
+				} 
+			} 
+		});
 	});
+
+	var $isInIFrame = (window.location !== window.parent.location);
+	var $window = $isInIFrame ? parent : self;
+    var $buttonSave = $$('button.button-save-sortable')[0];
+    var $buttonOpenNewWindow = $$('button.button-open-new-window')[0];
+    
+    if (! $isInIFrame) {
+	    $buttonOpenNewWindow.hide();
+    }
+    
+    $buttonOpenNewWindow.onclick = function () {
+	    var $win = window.open(window.location.href, '_blank', '');
+	    $win.focus();
+    }
+    
+	$buttonSave.onclick = function() {
+		new Ajax.Request("<?php echo $this->getSaveUrl(); ?>", {
+			method: "post",
+			evalScripts: true,
+			onLoading: function() { 
+				$window.$('loading-mask').show() 
+			},
+			onSuccess: function(transport) { 
+				$window.$('loading-mask').hide() 
+			},
+			onComplete:function(transport) { eval(transport.responseText) },
+			parameters: {
+				data: Sortable.serialize('sortlist'),
+				iframe: $isInIFrame,
+				form_key: '<?php echo $this->getFormKey(); ?>'
+			}
+		})
+	}
+})
 //]]>
 </script>
 <?php endif; ?>
