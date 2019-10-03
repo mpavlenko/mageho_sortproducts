@@ -1,3 +1,5 @@
+
+
 ## Original Package Description
 
 Highlight your best products catalog in a few mouse movements with Merchandising Catalog Extension!
