@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/Mageho_Sortproducts",
+    "name": "OpenMageModuleFostering\/Mageho_Sortproducts",
     "type": "magento-module",
     "license": "OSL-v3.0-:-Open-Software-License",
     "homepage": "",
     "description": "Highlight your best products catalog in a few mouse movements with Merchandising Catalog Extension!",
     "authors": [
-    {
-        "name": "Ilan PARMENTIER",
-        "email": "ilan.parmentier@mageho.com"
-    }
-],
+        {
+            "name": "Ilan PARMENTIER",
+            "email": "ilan.parmentier@mageho.com"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
