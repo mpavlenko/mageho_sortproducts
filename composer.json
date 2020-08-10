@@ -4,6 +4,7 @@
     "license": "OSL-3.0",
     "homepage": "",
     "description": "Highlight your best products catalog in a few mouse movements with Merchandising Catalog Extension!",
+    "extra": { "package-xml": "package.xml" },
     "authors": [
         {
             "name": "Ilan PARMENTIER",
